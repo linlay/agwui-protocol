@@ -1,0 +1,95 @@
+<svg width="1320" height="720" viewBox="0 0 1320 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AGW Interaction Flow</title>
+  <desc id="desc">Query 发起、SSE 输出、Submit、Steer、Interrupt 与终止事件之间的交互逻辑图。</desc>
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#29434e" />
+    </marker>
+    <style>
+      .bg { fill: #fbfaf7; }
+      .lane { stroke: #8aa1a9; stroke-width: 2; }
+      .node { stroke-width: 2; rx: 14; ry: 14; }
+      .front { fill: #d9eefb; stroke: #19607e; }
+      .gate { fill: #e8f4e8; stroke: #2e7d32; }
+      .run { fill: #fff3d6; stroke: #a36f00; }
+      .opt { fill: #f4e6dc; stroke: #8f5f3d; }
+      .title { font: 700 28px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+      .subtitle { font: 600 18px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+      .text { font: 500 15px "Helvetica Neue", Arial, sans-serif; fill: #24343b; }
+      .small { font: 500 14px "Helvetica Neue", Arial, sans-serif; fill: #485e67; }
+      .arrow { stroke: #29434e; stroke-width: 3; fill: none; marker-end: url(#arrow2); }
+      .dashed { stroke-dasharray: 8 6; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1320" height="720" />
+  <text class="title" x="50" y="58">AGW Interaction Flow</text>
+  <text class="small" x="50" y="88">主入口是 query，执行过程通过 SSE 推回；submit、steer、interrupt 会在运行中插入或打断流程。</text>
+
+  <text class="subtitle" x="95" y="145">Frontend</text>
+  <text class="subtitle" x="458" y="145">Gateway</text>
+  <text class="subtitle" x="860" y="145">Run / Agents</text>
+
+  <line class="lane" x1="170" y1="170" x2="170" y2="650" />
+  <line class="lane" x1="540" y1="170" x2="540" y2="650" />
+  <line class="lane" x1="960" y1="170" x2="960" y2="650" />
+
+  <rect class="node front" x="70" y="190" width="200" height="54" />
+  <text class="text" x="102" y="223">POST /api/query</text>
+
+  <rect class="node gate" x="420" y="190" width="240" height="54" />
+  <text class="text" x="452" y="223">建立 SSE Response</text>
+
+  <rect class="node run" x="850" y="190" width="220" height="54" />
+  <text class="text" x="880" y="223">request.query / run.start</text>
+
+  <path class="arrow" d="M270 217 H412" />
+  <path class="arrow" d="M660 217 H842" />
+
+  <rect class="node run" x="820" y="290" width="280" height="62" />
+  <text class="text" x="852" y="320">reasoning.* / tool.* / content.*</text>
+  <text class="small" x="875" y="340">主执行过程持续输出</text>
+
+  <path class="arrow dashed" d="M820 322 H548" />
+  <path class="arrow dashed" d="M540 322 H178" />
+  <text class="small" x="340" y="308">event: message + data: JSON</text>
+
+  <rect class="node front" x="52" y="410" width="236" height="54" />
+  <text class="text" x="82" y="443">POST /api/submit</text>
+
+  <rect class="node gate" x="414" y="410" width="252" height="54" />
+  <text class="text" x="452" y="443">同步确认 accepted</text>
+
+  <path class="arrow" d="M288 437 H406" />
+  <path class="arrow dashed" d="M666 437 H842" />
+  <text class="small" x="762" y="427">继续原 SSE 流</text>
+
+  <rect class="node front" x="52" y="500" width="236" height="54" />
+  <text class="text" x="87" y="533">POST /api/steer</text>
+
+  <rect class="node opt" x="414" y="500" width="252" height="54" />
+  <text class="text" x="446" y="533">accepted + request.steer</text>
+
+  <path class="arrow" d="M288 527 H406" />
+  <path class="arrow" d="M666 527 H842" />
+
+  <rect class="node front" x="40" y="590" width="260" height="54" />
+  <text class="text" x="68" y="623">POST /api/interrupt</text>
+
+  <rect class="node opt" x="406" y="590" width="268" height="54" />
+  <text class="text" x="444" y="623">accepted, then stop run</text>
+
+  <rect class="node run" x="866" y="590" width="188" height="54" />
+  <text class="text" x="904" y="623">run.cancel</text>
+
+  <path class="arrow" d="M300 617 H398" />
+  <path class="arrow" d="M674 617 H858" />
+
+  <rect x="760" y="425" width="400" height="96" fill="#fff" stroke="#c8d4d8" rx="14" ry="14" />
+  <text class="subtitle" x="790" y="455">流层终止条件</text>
+  <text class="small" x="790" y="485">正常结束：run.complete -&gt; data:[DONE]</text>
+  <text class="small" x="790" y="510">中断结束：run.cancel -&gt; data:[DONE]</text>
+
+  <rect x="66" y="666" width="1180" height="28" fill="#edf1f2" stroke="#c0ccd0" rx="10" ry="10" />
+  <text class="small" x="88" y="685">边界提示：request.submit / request.steer 属于流内回看事件；interrupt 不会产生 request.interrupt，而是直接映射为 run.cancel。</text>
+</svg>
