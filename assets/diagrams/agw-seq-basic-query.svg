@@ -1,0 +1,70 @@
+<svg width="1360" height="942" viewBox="0 0 1360 942" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AGW Basic Query Sequence</title>
+  <desc id="desc">没有前端交互打断时的主时序：Query 建流后，live SSE 持续输出直到 run.complete 或 run.error。</desc>
+
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L10,5 L0,10 z" fill="#29434e" />
+  </marker>
+  <style>
+    .bg { fill: #fbfaf7; }
+    .lane { stroke: #93a6ad; stroke-width: 2; }
+    .node { stroke-width: 2; rx: 14; ry: 14; }
+    .front { fill: #d9eefb; stroke: #19607e; }
+    .gate { fill: #e8f4e8; stroke: #2e7d32; }
+    .run { fill: #fff3d6; stroke: #a36f00; }
+    .note { fill: #f4e6dc; stroke: #8f5f3d; }
+    .accent { fill: #ede7fb; stroke: #6a4fb3; }
+    .title { font: 700 28px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .subtitle { font: 600 18px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .text { font: 500 15px "Helvetica Neue", Arial, sans-serif; fill: #24343b; }
+    .small { font: 500 13px "Helvetica Neue", Arial, sans-serif; fill: #485e67; }
+    .tiny { font: 500 12px "Helvetica Neue", Arial, sans-serif; fill: #566c74; }
+    .arrow { stroke: #29434e; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .dashed { stroke-dasharray: 8 6; }
+    .panel { fill: #ffffff; stroke: #c7d3d8; stroke-width: 1.5; rx: 16; ry: 16; }
+  </style>
+</defs>
+  <rect class="bg" x="0" y="0" width="1360" height="942" />
+  <text class="title" x="52" y="58">AGW Basic Query Sequence</text>
+  <text class="small" x="52" y="88">没有前端交互打断时的主时序：Query 建流后，live SSE 持续输出直到 run.complete 或 run.error。</text>
+  <text class="subtitle" x="115" y="145">Frontend</text>
+  <line class="lane" x1="170" y1="168" x2="170" y2="700" />
+  <text class="subtitle" x="485" y="145">Gateway</text>
+  <line class="lane" x1="540" y1="168" x2="540" y2="700" />
+  <text class="subtitle" x="905" y="145">Run-Agent</text>
+  <line class="lane" x1="960" y1="168" x2="960" y2="700" />
+  <rect class="node front" x="60" y="166" width="220" height="48" />
+  <text class="text" x="78" y="196">POST /api/query</text>
+  <path class="arrow" d="M280 190 H422" />
+  <rect class="node gate" x="430" y="240" width="220" height="48" />
+  <text class="text" x="448" y="270">HTTP 200 + text/event-stream</text>
+  <path class="arrow" d="M430 264 H288" />
+  <rect class="node run" x="830" y="312" width="260" height="52" />
+  <text class="text" x="848" y="342">request.query</text>
+  <path class="arrow dashed" d="M830 338 H548" />
+  <path class="arrow dashed" d="M540 338 H178" />
+  <rect class="node run" x="830" y="386" width="260" height="52" />
+  <text class="text" x="848" y="416">chat.start (optional)</text>
+  <path class="arrow dashed" d="M830 412 H548" />
+  <path class="arrow dashed" d="M540 412 H178" />
+  <rect class="node run" x="830" y="460" width="260" height="52" />
+  <text class="text" x="848" y="490">run.start</text>
+  <path class="arrow dashed" d="M830 486 H548" />
+  <path class="arrow dashed" d="M540 486 H178" />
+  <rect class="node accent" x="810" y="528" width="300" height="64" />
+  <text class="text" x="828" y="556">reasoning.* / content.* / tool.* / action.*</text>
+  <text class="small" x="828" y="578">主执行过程；tool.* 与 action.* 属于运行分支，不等同于前端交互</text>
+  <path class="arrow dashed" d="M810 560 H548" />
+  <path class="arrow dashed" d="M540 560 H178" />
+  <rect class="node run" x="830" y="608" width="260" height="52" />
+  <text class="text" x="848" y="638">run.complete or run.error</text>
+  <path class="arrow dashed" d="M830 634 H548" />
+  <path class="arrow dashed" d="M540 634 H178" />
+  <text class="small" x="314" y="712">传输层收尾：event: message + data: [DONE]</text>
+  <rect class="panel" x="54" y="792" width="1252" height="130" />
+  <text class="subtitle" x="78" y="822">图上要点</text>
+  <text class="small" x="78" y="850">- 只画 live SSE，不画 reasoning.snapshot / content.snapshot / tool.snapshot / action.snapshot。</text>
+  <text class="small" x="78" y="872">- run.error 与 run.complete 是互斥终止分支。</text>
+  <text class="small" x="78" y="894">- tool.start 当前不应标注 toolType / viewportKey / toolTimeout。</text>
+</svg>

@@ -20,12 +20,12 @@
 - 前端只与 Gateway 交互，不直接调用 Agent
 - Gateway 负责把请求路由到单个 Agent 或多 Agent 协作链路
 - 上传文件、图片、产物和资源下载统一通过 Resource Store 管理
-- Viewport 相关内容通过 `viewportKey` 获取
+- Viewport 相关内容通过 `GET /api/viewport` 获取
 - Query 的执行过程通过 SSE 持续回到前端
 
-## 3. 交互逻辑图
+## 3. 交互总览图
 
-![AGW Interaction Flow](../assets/diagrams/agw-interaction-flow.svg)
+![AGW Interaction Overview](../assets/diagrams/agw-interaction-overview.svg)
 
 ### 逻辑说明
 
@@ -36,7 +36,19 @@
 - `steer` 用于给正在进行的 run 注入额外用户指令
 - `interrupt` 用于终止当前 run，流层结果表现为 `run.cancel`
 
-## 4. 三条关键链路
+## 4. 细分时序图
+
+完整细分图请见：[交互时序图](interaction-sequences.md)
+
+- `agw-seq-basic-query.svg`：纯 Query 主流
+- `agw-seq-steer.svg`：运行中追加 `request.steer`
+- `agw-seq-interrupt.svg`：运行中 `run.cancel`
+- `agw-seq-hitl-approval.svg`：approval 型等待确认
+- `agw-seq-hitl-question.svg`：question 型问答表单
+- `agw-seq-hitl-bash.svg`：危险命令命中的双层 HITL
+- `agw-seq-artifact-publish.svg`：一次工具结果，多条 `artifact.publish`
+
+## 5. 三条关键链路
 
 ### 查询链路
 
@@ -58,13 +70,14 @@
 
 ### 视图交互链路
 
-1. Agent 运行时通过 `tool.start` 暴露 `viewportKey`
-2. 前端用 `GET /api/viewport` 获取视图 payload
-3. 用户在前端完成表单或操作
-4. 前端通过 `POST /api/submit` 回传结果
-5. 后续结果继续在同一 SSE 流中体现
+1. Agent 运行时通过 live SSE 发出 `tool.start`、`awaiting.ask`、`awaiting.payload`
+2. 前端根据 `awaiting.ask.viewportKey` 或业务约定选择合适 UI
+3. 如需视图 payload，前端通过 `GET /api/viewport` 获取
+4. 用户在前端完成表单或操作
+5. 前端通过 `POST /api/submit` 回传结果
+6. 后续结果继续在同一 SSE 流中体现
 
-## 5. 设计重点
+## 6. 设计重点
 
 - 对前端暴露统一协议，不泄漏底层 Agent 实现差异
 - HTTP 层与 SSE 事件层解耦，便于同步确认和异步渲染并存

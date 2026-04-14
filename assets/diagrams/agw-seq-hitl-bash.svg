@@ -1,0 +1,76 @@
+<svg width="1360" height="770" viewBox="0 0 1360 770" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AGW Bash HITL Sequence</title>
+  <desc id="desc">危险命令命中的双层 HITL 时序图。</desc>
+
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L10,5 L0,10 z" fill="#29434e" />
+  </marker>
+  <style>
+    .bg { fill: #fbfaf7; }
+    .lane { stroke: #93a6ad; stroke-width: 2; }
+    .node { stroke-width: 2; rx: 14; ry: 14; }
+    .front { fill: #d9eefb; stroke: #19607e; }
+    .gate { fill: #e8f4e8; stroke: #2e7d32; }
+    .run { fill: #fff3d6; stroke: #a36f00; }
+    .note { fill: #f4e6dc; stroke: #8f5f3d; }
+    .accent { fill: #ede7fb; stroke: #6a4fb3; }
+    .title { font: 700 28px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .subtitle { font: 600 18px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .text { font: 500 15px "Helvetica Neue", Arial, sans-serif; fill: #24343b; }
+    .small { font: 500 13px "Helvetica Neue", Arial, sans-serif; fill: #485e67; }
+    .tiny { font: 500 12px "Helvetica Neue", Arial, sans-serif; fill: #566c74; }
+    .arrow { stroke: #29434e; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .dashed { stroke-dasharray: 8 6; }
+    .panel { fill: #ffffff; stroke: #c7d3d8; stroke-width: 1.5; rx: 16; ry: 16; }
+  </style>
+</defs>
+  <rect class="bg" x="0" y="0" width="1360" height="770" />
+
+<text class="title" x="52" y="58">AGW Bash HITL Sequence</text>
+<text class="small" x="52" y="88">危险命令命中 HITL 规则时，会在原始工具外再插入一个 synthetic confirm tool。</text>
+
+<text class="subtitle" x="94" y="145">Frontend</text>
+<text class="subtitle" x="454" y="145">Gateway</text>
+<text class="subtitle" x="842" y="145">Run-Agent</text>
+
+<line class="lane" x1="170" y1="170" x2="170" y2="700" />
+<line class="lane" x1="540" y1="170" x2="540" y2="700" />
+<line class="lane" x1="960" y1="170" x2="960" y2="700" />
+
+<rect class="node front" x="60" y="188" width="220" height="52" />
+<text class="text" x="88" y="220">POST /api/query</text>
+<path class="arrow" d="M280 214 H430" />
+<rect class="node run" x="810" y="188" width="300" height="52" />
+<text class="text" x="842" y="220">tool.start(_sandbox_bash_)</text>
+<path class="arrow dashed" d="M810 214 H548" />
+<path class="arrow dashed" d="M540 214 H178" />
+
+<rect class="node accent" x="800" y="280" width="320" height="72" />
+<text class="text" x="832" y="312">命中 Bash HITL 规则</text>
+<text class="small" x="832" y="336">插入 synthetic tool: _hitl_confirm_dialog_</text>
+<path class="arrow dashed" d="M800 316 H548" />
+<path class="arrow dashed" d="M540 316 H178" />
+
+<rect class="node run" x="796" y="390" width="328" height="56" />
+<text class="text" x="822" y="423">tool.start(_hitl_confirm_dialog_) + awaiting.ask</text>
+<path class="arrow dashed" d="M796 418 H548" />
+<path class="arrow dashed" d="M540 418 H178" />
+
+<rect class="node front" x="40" y="500" width="240" height="52" />
+<text class="text" x="70" y="532">POST /api/submit (synthetic awaitingId)</text>
+<rect class="node gate" x="404" y="500" width="272" height="52" />
+<text class="text" x="438" y="532">HTTP ack (accepted)</text>
+<path class="arrow" d="M280 526 H396" />
+
+<rect class="node run" x="804" y="492" width="312" height="76" />
+<text class="text" x="834" y="522">request.submit</text>
+<text class="small" x="834" y="546">先 tool.result(_hitl_confirm_dialog_)，再 tool.result(_sandbox_bash_)</text>
+<path class="arrow" d="M676 526 H796" />
+
+<rect class="panel" x="62" y="612" width="1236" height="130" />
+<text class="subtitle" x="86" y="644">图上要点</text>
+<text class="small" x="86" y="672">- 这是“原始工具 + 合成确认工具”的双层时序，不应并入普通 approval 图。</text>
+<text class="small" x="86" y="694">- request.submit 与 awaiting.ask 绑定的是 synthetic tool；原始工具结果晚于 synthetic tool 结果。</text>
+<text class="small" x="86" y="716">- 只画前端可见的 live 事件，不展开内部规则匹配实现。</text>
+</svg>
