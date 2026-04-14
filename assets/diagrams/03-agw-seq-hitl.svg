@@ -1,0 +1,78 @@
+<svg width="1360" height="778" viewBox="0 0 1360 778" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">03 AGW HITL Sequence</title>
+  <desc id="desc">approval、question、bash 三类 HITL 交互合并图。</desc>
+
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L10,5 L0,10 z" fill="#29434e" />
+  </marker>
+  <style>
+    .bg { fill: #fbfaf7; }
+    .lane { stroke: #93a6ad; stroke-width: 2; }
+    .node { stroke-width: 2; rx: 14; ry: 14; }
+    .front { fill: #d9eefb; stroke: #19607e; }
+    .platform { fill: #e8f4e8; stroke: #2e7d32; }
+    .run { fill: #fff3d6; stroke: #a36f00; }
+    .note { fill: #f4e6dc; stroke: #8f5f3d; }
+    .accent { fill: #ede7fb; stroke: #6a4fb3; }
+    .title { font: 700 28px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .subtitle { font: 600 18px "Helvetica Neue", Arial, sans-serif; fill: #1f2a30; }
+    .text { font: 500 15px "Helvetica Neue", Arial, sans-serif; fill: #24343b; }
+    .small { font: 500 13px "Helvetica Neue", Arial, sans-serif; fill: #485e67; }
+    .tiny { font: 500 12px "Helvetica Neue", Arial, sans-serif; fill: #566c74; }
+    .arrow { stroke: #29434e; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .dashed { stroke-dasharray: 8 6; }
+    .panel { fill: #ffffff; stroke: #c7d3d8; stroke-width: 1.5; rx: 16; ry: 16; }
+  </style>
+</defs>
+  <rect class="bg" x="0" y="0" width="1360" height="778" />
+  <text class="title" x="52" y="58">03 AGW HITL Sequence</text>
+  <text class="small" x="52" y="88">三类 HITL 共享同一个 submit 恢复主干，但 waiting 信息和 tool 生命周期细节不同。</text>
+  <text class="subtitle" x="98" y="145">Frontend</text>
+  <text class="subtitle" x="432" y="145">Agent Platform</text>
+  <text class="subtitle" x="848" y="145">Run-Agent</text>
+  <line class="lane" x1="170" y1="170" x2="170" y2="630" />
+  <line class="lane" x1="540" y1="170" x2="540" y2="630" />
+  <line class="lane" x1="960" y1="170" x2="960" y2="630" />
+  <rect class="node run" x="816" y="188" width="288" height="52" />
+  <text class="text" x="846" y="220">tool.start</text>
+  <path class="arrow dashed" d="M816 214 H548" />
+  <path class="arrow dashed" d="M540 214 H178" />
+  <rect class="node run" x="816" y="260" width="288" height="52" />
+  <text class="text" x="846" y="292">awaiting.ask</text>
+  <path class="arrow dashed" d="M816 286 H548" />
+  <path class="arrow dashed" d="M540 286 H178" />
+  <rect class="node front" x="48" y="350" width="244" height="52" />
+  <text class="text" x="76" y="382">POST /api/submit (awaitingId)</text>
+  <rect class="node platform" x="414" y="350" width="252" height="52" />
+  <text class="text" x="446" y="382">HTTP ack</text>
+  <path class="arrow" d="M292 376 H406" />
+  <rect class="node run" x="816" y="350" width="288" height="52" />
+  <text class="text" x="844" y="382">request.submit</text>
+  <path class="arrow" d="M666 376 H808" />
+  <rect class="node run" x="816" y="422" width="288" height="52" />
+  <text class="text" x="846" y="454">tool.result</text>
+  <path class="arrow dashed" d="M816 448 H548" />
+  <path class="arrow dashed" d="M540 448 H178" />
+  <rect class="node note" x="54" y="506" width="380" height="102" />
+  <text class="text" x="80" y="534">approval 分支</text>
+  <text class="small" x="80" y="560">tool.args -&gt; tool.end -&gt; awaiting.ask</text>
+  <text class="small" x="80" y="582">questions 在 awaiting.ask 顶层</text>
+  <text class="small" x="80" y="604">没有 awaiting.payload</text>
+  <rect class="node note" x="490" y="506" width="380" height="102" />
+  <text class="text" x="516" y="534">question 分支</text>
+  <text class="small" x="516" y="560">awaiting.ask 在 tool.start 后、tool.args 前</text>
+  <text class="small" x="516" y="582">questions 在 awaiting.payload</text>
+  <text class="small" x="516" y="604">tool.end 后再出现 awaiting.payload</text>
+  <rect class="node note" x="926" y="506" width="380" height="112" />
+  <text class="text" x="952" y="534">bash 分支</text>
+  <text class="small" x="952" y="560">original tool.start(_sandbox_bash_)</text>
+  <text class="small" x="952" y="582">synthetic tool.start(_hitl_confirm_dialog_)</text>
+  <text class="small" x="952" y="604">awaiting.ask / request.submit 绑定 synthetic tool</text>
+  <text class="small" x="952" y="626">synthetic tool.result 先于 original tool.result</text>
+  <rect class="panel" x="56" y="640" width="1248" height="118" />
+  <text class="subtitle" x="80" y="670">图上要点</text>
+  <text class="small" x="80" y="698">- request.submit 的 HTTP 字段名是 awaitingId；当前流内 payload 仍使用 toolId。</text>
+  <text class="small" x="80" y="720">- approval 没有 awaiting.payload；question 的问题列表在 awaiting.payload。</text>
+  <text class="small" x="80" y="742">- bash 分支是 original tool + synthetic confirm tool 的双层时序。</text>
+</svg>

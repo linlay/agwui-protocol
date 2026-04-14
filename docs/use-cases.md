@@ -6,7 +6,7 @@
 
 - `reasoning.delta`、`tool.args`、`content.delta` 都是流式“吐字”，会拆成多段
 - 业务事件统一采用 `event: message + data: {"seq":...,"type":"...","timestamp":...}` 的单行 JSON 格式
-- 流结束时会追加 `data:[DONE]`
+- 流结束时会追加 `event: message` + `data: [DONE]`
 
 ## 1. 基础问答：Query + Content
 

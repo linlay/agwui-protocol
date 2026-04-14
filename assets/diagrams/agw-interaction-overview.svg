@@ -1,6 +1,6 @@
-<svg width="1320" height="760" viewBox="0 0 1320 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">AGW Interaction Overview</title>
-  <desc id="desc">AGW live 协议的总览式交互图。</desc>
+<svg width="1320" height="778" viewBox="0 0 1320 778" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">01 AGW Sequence Overview</title>
+  <desc id="desc">AGW live 协议的总览图。</desc>
 
 <defs>
   <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -11,7 +11,7 @@
     .lane { stroke: #93a6ad; stroke-width: 2; }
     .node { stroke-width: 2; rx: 14; ry: 14; }
     .front { fill: #d9eefb; stroke: #19607e; }
-    .gate { fill: #e8f4e8; stroke: #2e7d32; }
+    .platform { fill: #e8f4e8; stroke: #2e7d32; }
     .run { fill: #fff3d6; stroke: #a36f00; }
     .note { fill: #f4e6dc; stroke: #8f5f3d; }
     .accent { fill: #ede7fb; stroke: #6a4fb3; }
@@ -25,58 +25,43 @@
     .panel { fill: #ffffff; stroke: #c7d3d8; stroke-width: 1.5; rx: 16; ry: 16; }
   </style>
 </defs>
-  <rect class="bg" x="0" y="0" width="1320" height="760" />
-
-<text class="title" x="52" y="58">AGW Interaction Overview</text>
-<text class="small" x="52" y="88">live 协议按交互模式拆分：Query 主流、Steer、Interrupt，以及 4 类工具交互分支。</text>
-
-<text class="subtitle" x="92" y="145">Frontend</text>
-<text class="subtitle" x="455" y="145">Gateway</text>
-<text class="subtitle" x="850" y="145">Run-Agent</text>
-
-<line class="lane" x1="170" y1="170" x2="170" y2="690" />
-<line class="lane" x1="540" y1="170" x2="540" y2="690" />
-<line class="lane" x1="960" y1="170" x2="960" y2="690" />
-
-<rect class="node front" x="58" y="190" width="224" height="54" />
-<text class="text" x="88" y="223">POST /api/query</text>
-<rect class="node gate" x="418" y="190" width="244" height="54" />
-<text class="text" x="452" y="223">建立单条 SSE 通道</text>
-<rect class="node run" x="822" y="190" width="276" height="54" />
-<text class="text" x="850" y="223">request.query -&gt; run.start</text>
-<path class="arrow" d="M282 217 H410" />
-<path class="arrow" d="M662 217 H814" />
-
-<rect class="node run" x="802" y="286" width="316" height="70" />
-<text class="text" x="832" y="316">基础主流：reasoning.* / content.* / tool.* / action.*</text>
-<text class="small" x="862" y="340">正常终止：run.complete 或失败终止：run.error</text>
-<path class="arrow dashed" d="M802 321 H548" />
-<path class="arrow dashed" d="M540 321 H178" />
-
-<rect class="node note" x="90" y="410" width="250" height="52" />
-<text class="text" x="126" y="442">POST /api/steer</text>
-<rect class="node note" x="430" y="410" width="220" height="52" />
-<text class="text" x="458" y="442">HTTP ack</text>
-<rect class="node accent" x="820" y="398" width="280" height="76" />
-<text class="text" x="848" y="430">原 SSE 流插入 request.steer</text>
-<text class="small" x="848" y="454">不新建第二条 SSE，Run 继续执行</text>
-<path class="arrow" d="M340 436 H422" />
-<path class="arrow" d="M650 436 H812" />
-
-<rect class="node note" x="80" y="505" width="260" height="52" />
-<text class="text" x="112" y="537">POST /api/interrupt</text>
-<rect class="node note" x="420" y="505" width="240" height="52" />
-<text class="text" x="455" y="537">HTTP ack + stop run</text>
-<rect class="node accent" x="832" y="493" width="256" height="76" />
-<text class="text" x="872" y="525">run.cancel -&gt; [DONE]</text>
-<text class="small" x="858" y="549">没有 request.interrupt</text>
-<path class="arrow" d="M340 531 H412" />
-<path class="arrow" d="M660 531 H824" />
-
-<rect class="panel" x="68" y="600" width="1188" height="120" />
-<text class="subtitle" x="92" y="632">细分图集合</text>
-<text class="small" x="92" y="660">- agw-seq-basic-query.svg：纯 Query 主流</text>
-<text class="small" x="92" y="682">- agw-seq-steer.svg / agw-seq-interrupt.svg：运行中插入的控制动作</text>
-<text class="small" x="540" y="660">- agw-seq-hitl-approval.svg / agw-seq-hitl-question.svg：两类用户交互</text>
-<text class="small" x="540" y="682">- agw-seq-hitl-bash.svg / agw-seq-artifact-publish.svg：复杂工具分支</text>
+  <rect class="bg" x="0" y="0" width="1320" height="778" />
+  <text class="title" x="52" y="58">01 AGW Sequence Overview</text>
+  <text class="small" x="52" y="88">协议默认主体是 Frontend 与 Agent Platform；Gateway 只是兼容部署模式之一。</text>
+  <text class="subtitle" x="98" y="145">Frontend</text>
+  <text class="subtitle" x="432" y="145">Agent Platform</text>
+  <text class="subtitle" x="848" y="145">Run-Agent</text>
+  <line class="lane" x1="170" y1="170" x2="170" y2="610" />
+  <line class="lane" x1="540" y1="170" x2="540" y2="610" />
+  <line class="lane" x1="960" y1="170" x2="960" y2="610" />
+  <rect class="node front" x="52" y="190" width="236" height="54" />
+  <text class="text" x="82" y="223">POST /api/query</text>
+  <rect class="node platform" x="414" y="190" width="252" height="54" />
+  <text class="text" x="446" y="223">建立 live SSE 通道</text>
+  <rect class="node run" x="816" y="190" width="288" height="54" />
+  <text class="text" x="848" y="223">request.query -&gt; run.start</text>
+  <path class="arrow" d="M288 217 H406" />
+  <path class="arrow" d="M666 217 H808" />
+  <rect class="node run" x="800" y="286" width="320" height="72" />
+  <text class="text" x="828" y="316">基础执行主流</text>
+  <text class="small" x="828" y="340">reasoning.* / content.* / tool.* / action.*</text>
+  <path class="arrow dashed" d="M800 322 H548" />
+  <path class="arrow dashed" d="M540 322 H178" />
+  <rect class="node note" x="62" y="404" width="226" height="52" />
+  <text class="text" x="92" y="436">POST /api/submit</text>
+  <rect class="node note" x="62" y="474" width="226" height="52" />
+  <text class="text" x="92" y="506">POST /api/steer</text>
+  <rect class="node note" x="62" y="544" width="226" height="52" />
+  <text class="text" x="92" y="576">POST /api/interrupt</text>
+  <rect class="node accent" x="400" y="396" width="720" height="200" />
+  <text class="text" x="432" y="430">同一条协议有 3 类运行中控制分支</text>
+  <text class="small" x="432" y="460">submit：对应 request.submit，恢复等待中的工具交互</text>
+  <text class="small" x="432" y="486">steer：对应 request.steer，在原 SSE 流中插入追加用户指令</text>
+  <text class="small" x="432" y="512">interrupt：不产生 request.interrupt，而是以 run.cancel -&gt; [DONE] 收尾</text>
+  <text class="small" x="432" y="548">HITL 与 artifact 是主流中的两种重要分支，分别见 03 / 04 号图</text>
+  <rect class="panel" x="56" y="640" width="1208" height="118" />
+  <text class="subtitle" x="80" y="670">图上要点</text>
+  <text class="small" x="80" y="698">- 这张图只讲入口和分流，不展开 approval / question / bash / artifact 的细节。</text>
+  <text class="small" x="80" y="720">- 默认泳道固定为 Frontend / Agent Platform / Run-Agent。</text>
+  <text class="small" x="80" y="742">- 只画前端可见的 live 协议，不画 snapshot / persisted 事件。</text>
 </svg>

@@ -21,12 +21,12 @@ data: {"seq":3,"type":"run.start","timestamp":1707000002,"runId":"run_001","chat
 SSE 传输层保活事件；由注释帧标准化而来，不属于业务 JSON 事件。
 
 ```text
-event: heartbeat
+: heartbeat
 ```
 
 | 项 | 说明 |
 | --- | --- |
-| `wire format` | `event: heartbeat` |
+| `wire format` | `: heartbeat` |
 | `data` | 无 |
 
 ### 1.3 Done Sentinel
@@ -34,12 +34,13 @@ event: heartbeat
 流结束时追加的传输层终止帧，不是业务事件，也不会写入历史 `events`。
 
 ```text
-data:[DONE]
+event: message
+data: [DONE]
 ```
 
 | 项 | 说明 |
 | --- | --- |
-| `wire format` | `data:[DONE]` |
+| `wire format` | `event: message` + `data: [DONE]` |
 | `data` | 非 JSON 文本 |
 
 ## 2. Base Event
@@ -73,7 +74,7 @@ data:[DONE]
 | --- | --- |
 | `type` | 固定为 `"request.query"` |
 | `requestId` | 前端生成，用于幂等、重试和链路追踪 |
-| `chatId` | 聊天会话 ID，可由前端生成或由网关创建后回传 |
+| `chatId` | 聊天会话 ID，可由前端生成或由服务端创建后回传 |
 | `agentKey` | 可选；如 `auto`、`default`、`agent_researcher` |
 | `teamId` | 可选 |
 | `role` | `"user" \| "system" \| "assistant" \| "developer" \| "other"` |
@@ -81,25 +82,10 @@ data:[DONE]
 | `references` | `Reference[]`，可选 |
 | `params` | 结构化参数，可选 |
 | `scene` | `{url,title}`，可选 |
-| `stream` | 可选；当前网关仍固定返回 SSE |
+| `stream` | 可选；当前实现固定返回 SSE |
 | `hidden` | 可选 |
 
 说明：当前事件 payload 不应等同于 HTTP request body；只有实现实际写入流中的字段才属于 live SSE 协议。
-
-### 4.2 `request.upload`
-
-请求动作事件：`request.upload`，对应 API `POST /api/upload`。这是统一事件记录中的内部对象；公开 HTTP 请求本身是 `multipart/form-data`，不是 JSON `upload` 对象。
-
-| 字段 | 说明 |
-| --- | --- |
-| `type` | 固定为 `"request.upload"` |
-| `requestId` | 前端生成 |
-| `chatId` | chat ID，可选；缺省则网关创建 |
-| `upload.type` | `"file" \| "image"` |
-| `upload.name` | 文件名 |
-| `upload.sizeBytes` | 文件大小 |
-| `upload.mimeType` | MIME 类型 |
-| `upload.sha256` | 可选 |
 
 ### 4.3 `request.submit`
 
@@ -113,7 +99,6 @@ data:[DONE]
 | `runId` | 当前 run |
 | `toolId` | 提交给哪个工具 |
 | `payload` | 表单值、按钮值、选择结果等 |
-| `viewId` | 可选 |
 
 ### 4.4 `request.steer`
 
@@ -174,7 +159,7 @@ data:[DONE]
 | 字段 | 说明 |
 | --- | --- |
 | `runId` | 已完成的运行实例 ID |
-| `finishReason` | 完成原因，缺省为 `end_turn` |
+| `finishReason` | 完成原因；取值由当前运行流决定 |
 
 ### 6.3 `run.cancel`
 
@@ -293,7 +278,7 @@ data:[DONE]
 
 ### 10.1 `tool.start`
 
-工具开始事件；前端工具在最终输出中会补充 viewport 相关字段。
+工具开始事件；这里只列当前 live SSE 主路径里稳定出现的字段。
 
 | 字段 | 说明 |
 | --- | --- |
@@ -301,11 +286,13 @@ data:[DONE]
 | `runId` | 运行实例 ID |
 | `toolName` | 工具名称 |
 | `taskId` | 可选；任务 ID |
-| `toolType` | 可选；前端工具常见为 `html/qlc/dqlc` |
 | `toolLabel` | 可选；展示名 |
 | `toolDescription` | 可选；展示描述 |
-| `viewportKey` | 仅前端工具会出现 |
-| `toolTimeout` | 仅前端工具会出现，单位毫秒 |
+
+说明：
+
+- 当前实现的 live `tool.start` 不应默认暴露 `toolType`、`viewportKey`、`toolTimeout`。
+- 需要视图相关信息时，应以 `awaiting.ask`、`awaiting.payload` 或 `GET /api/viewport` 的约定为准，而不是把这些字段视为所有 `tool.start` 的默认 schema。
 
 ### 10.2 `tool.args`
 
@@ -331,12 +318,14 @@ data:[DONE]
 | `runId` | 运行实例 ID |
 | `toolName` | 工具名称 |
 | `taskId` | 可选；任务 ID |
-| `toolType` | 可选 |
 | `toolLabel` | 可选 |
 | `toolDescription` | 可选 |
-| `viewportKey` | 前端工具可能出现 |
-| `toolTimeout` | 前端工具可能出现 |
 | `arguments` | 工具参数快照 |
+
+说明：
+
+- 历史 `tool.snapshot` 也不应被文档默认定义为包含 `toolType`、`viewportKey`、`toolTimeout`。
+- 如某些兼容实现或视图相关上下文带出额外字段，应作为具体实现扩展说明，不应提升为当前协议默认字段。
 
 ### 10.5 `tool.result`
 
@@ -348,7 +337,8 @@ data:[DONE]
 ### 10.6 提交边界
 
 - 前端交互提交走 `POST /api/submit`。
-- 运行流里会记录为 `request.submit`。
+- HTTP body 使用 `awaitingId` 标识当前等待态。
+- 运行流里会记录为 `request.submit`，当前 payload 仍使用 `toolId`。
 - 不会额外发一条独立的“工具参数事件”。
 
 ## 11. Artifact 事件
@@ -448,5 +438,6 @@ chat
 - `submit` 对应 `request.submit`
 - `steer` 对应 `request.steer`
 - `interrupt` 对应 `run.cancel`
-- `heartbeat` 和 `data:[DONE]` 都是传输层概念，不是业务 JSON 事件
+- `heartbeat` 和 `event: message
+data: [DONE]` 都是传输层概念，不是业务 JSON 事件
 - snapshot 事件属于历史持久化，不属于 live SSE

@@ -13,14 +13,14 @@
 
 ### 2.1 `POST /api/query`
 
-发起一次对话请求；当前网关固定以 SSE 返回实时事件流。
+发起一次对话请求；当前实现固定返回 SSE 实时事件流。
 
 #### `QueryRequest`
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `requestId` | `string` | 前端生成，用于幂等、重试和链路追踪；前端不填时会等于 `runId` |
-| `chatId` | `string(UUID)` | 可选；缺省则网关创建 chat |
+| `chatId` | `string(UUID)` | 可选；缺省则服务端创建 chat |
 | `agentKey` | `string` | 可选；如 `auto`、`default`、`agent_researcher` |
 | `teamId` | `string` | 可选；团队或租户路由信息 |
 | `role` | `"user" \| "system" \| "assistant" \| "developer" \| "other"` | 当前消息角色 |
@@ -30,7 +30,7 @@
 | `scene` | `object` | 可选；页面上下文，通常以 `url` 为主 |
 | `scene.url` | `string` | 建议提供 |
 | `scene.title` | `string` | 可选 |
-| `stream` | `boolean` | 可选；保留作上游兼容字段，当前网关仍固定返回 SSE |
+| `stream` | `boolean` | 可选；保留作兼容字段，当前实现固定返回 SSE |
 | `hidden` | `boolean` | 可选；隐藏本次请求的部分前端展示内容 |
 
 #### `QueryResponse`
@@ -41,8 +41,8 @@
 | --- | --- |
 | `Content-Type` | `text/event-stream` |
 | `business frames` | 业务事件统一使用 `event: message`，`data` 为单行 JSON，包含 `seq/type/timestamp` |
-| `heartbeat` | 传输层保活时会出现 `event: heartbeat`，无 JSON `data` |
-| `done sentinel` | 流结束时追加 `data:[DONE]`；它不是业务事件，不会进入历史 `events` |
+| `heartbeat` | 传输层保活时会出现 `: heartbeat`，注释帧，不带 JSON `data` |
+| `done sentinel` | 流结束时发送 `event: message` + `data: [DONE]`；它不是业务事件，不会进入历史 `events` |
 
 #### 边界说明
 
@@ -59,7 +59,7 @@
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `requestId` | `string` | 前端生成，用于幂等和重试 |
-| `chatId` | `string(UUID)` | 可选；缺省则网关创建 chat |
+| `chatId` | `string(UUID)` | 可选；缺省则服务端创建 chat |
 | `file` | `multipart file` | 必填 |
 | `sha256` | `string` | 可选 |
 
@@ -93,7 +93,7 @@
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `runId` | `string` | 当前运行 ID |
-| `toolId` | `string` | 必填；当前交互关联的工具 |
+| `awaitingId` | `string` | 必填；当前交互关联的 awaiting / tool |
 | `params` | `any` | 必填；表单值、按钮值、选择结果等 |
 
 #### `SubmitResponse`
@@ -103,14 +103,14 @@
 | `accepted` | `boolean` | 是否接受 |
 | `status` | `string` | 接收状态 |
 | `runId` | `string` | 当前 run |
-| `toolId` | `string` | 当前 tool |
+| `awaitingId` | `string` | 当前 awaiting |
 | `detail` | `string` | 说明文字 |
 
 #### 边界说明
 
 - `submit` 是同步确认接口。
 - 工具执行结果与最终回答仍走原 SSE 流，常见表现是 `tool.result` 或后续 `content.*`。
-- 运行流里记录为 `request.submit`，不会额外产生一条独立的“工具参数事件”。
+- 运行流里记录为 `request.submit`；当前 HTTP 字段名是 `awaitingId`，而 live SSE 回看事件仍使用 `toolId`。
 
 ### 2.4 `POST /api/steer`
 
@@ -180,7 +180,7 @@
 
 ### 3.1 `GET /api/viewport`
 
-获取工具或渲染对应的视图（表单、UI、HTML 等）；`viewportKey` 通常来自 `tool.start` 事件或 viewport 内容。
+获取工具或渲染对应的视图（表单、UI、HTML 等）；`viewportKey` 通常来自 `awaiting.ask` 或其他业务约定。
 
 #### `ViewportRequest`
 
