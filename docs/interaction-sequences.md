@@ -1,6 +1,6 @@
 # 交互时序图
 
-本页把 AGW 的 live 协议交互收敛为 5 张编号化主图，只覆盖前端真实可见的 `HTTP + live SSE`，不画 snapshot / persisted 历史事件。
+本页把 AGW 的 live 协议交互收敛为 7 张编号化主图，只覆盖前端真实可见的 `HTTP + live SSE`，不画 snapshot / persisted 历史事件。
 
 ## 01 总览图
 
@@ -15,32 +15,54 @@
 这张图只画基础 Query 主流，并把同一个 chat 中的两次 run 并列出来：
 
 - 首次请求：`POST /api/query -> [chat.start] -> run.start -> ... -> run.complete`
-- 后续请求：复用 `chatId`，再次 `POST /api/query -> run.start -> ... -> run.complete`
+- 后续请求：复用 `chatId`，再次 `POST /api/query -> run.start`
 - 关键差异：`chat.start` 只在创建新 chat 时出现，后续 turn 不再重复
 
-## 02B Steer + Interrupt
+## 03 Steer
 
-![02B AGW Steer and Interrupt](../assets/diagrams/02b-agw-seq-steer-interrupt.svg)
+![03 AGW Steer Sequence](../assets/diagrams/03-agw-seq-steer.svg)
 
-这张图单独展开运行中的两个控制分支：
+这张图单独展开运行中的 steer 控制分支：
 
-- steer 分支：`POST /api/steer -> HTTP ack -> request.steer -> 原流继续`
-- interrupt 分支：`POST /api/interrupt -> HTTP ack -> run.cancel -> [DONE]`
-- 共同点：都作用在原始 run 和原始 SSE 流上，不新开第二条事件流
+- `POST /api/steer -> HTTP ack -> request.steer`
+- `request.steer` 插入原始 SSE 流，不新开第二条事件流
+- 原流继续输出正文并正常 `run.complete`
 
-## 03 HITL 合并图
+## 04 Interrupt
 
-![03 AGW HITL Sequence](../assets/diagrams/03-agw-seq-hitl.svg)
+![04 AGW Interrupt Sequence](../assets/diagrams/04-agw-seq-interrupt.svg)
 
-这张图合并 approval、question、bash 三类 HITL：
+这张图单独展开运行中的 interrupt 控制分支：
 
-- approval：`tool.args -> tool.end -> awaiting.ask`，`questions` 在 `awaiting.ask`，没有 `awaiting.payload`
-- question：`awaiting.ask` 在 `tool.start` 后、`tool.args` 前，`questions` 在 `awaiting.payload`
-- bash：原始 `_sandbox_bash_` 工具会绑定 synthetic `_hitl_confirm_dialog_`；`awaiting.ask` / `request.submit` 绑定 synthetic tool，且 synthetic `tool.result` 先于 original bash tool 的 `tool.result`
+- `POST /api/interrupt -> HTTP ack -> run.cancel -> [DONE]`
+- 流里不会出现 `request.interrupt`
+- 中断收尾通过 `run.cancel` 和 `[DONE]` 表达
 
-## 04 Artifact 图
+## 05 Question
 
-![04 AGW Artifact Sequence](../assets/diagrams/04-agw-seq-artifact.svg)
+![05 AGW Question Sequence](../assets/diagrams/05-agw-seq-question.svg)
+
+这张图只画 question 分支：
+
+- `awaiting.ask` 先声明等待态
+- `questions` 通过 `awaiting.payload` 下发
+- `POST /api/submit` 的 HTTP 字段名是 `awaitingId`
+- 流内 `request.submit` 当前仍使用 `toolId`
+
+## 06 Approval
+
+![06 AGW Approval Sequence](../assets/diagrams/06-agw-seq-approval.svg)
+
+这张图只画 approval 分支：
+
+- `tool.args -> tool.end -> awaiting.ask`
+- `questions` 直接位于 `awaiting.ask` 顶层
+- approval 没有 `awaiting.payload`
+- `request.submit` 仍回到同一主流继续执行
+
+## 07 Artifact
+
+![07 AGW Artifact Sequence](../assets/diagrams/07-agw-seq-artifact.svg)
 
 一次工具调用可以在 `tool.result` 之后连续发出多条 `artifact.publish`。
 
