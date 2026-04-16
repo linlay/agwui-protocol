@@ -41,7 +41,7 @@
   <text class="small" x="178" y="520">获取表单或视图载荷</text>
   <rect class="node side" x="520" y="430" width="250" height="120" />
   <text class="subtitle" x="560" y="470">Resource Store</text>
-  <text class="small" x="548" y="498">upload / resource / artifact</text>
+  <text class="small" x="548" y="498">upload / resource / <tspan fill="#C090A8" font-weight="700">artifact</tspan></text>
   <text class="small" x="548" y="520">文件、图片、产物下载</text>
   <path class="arrow" d="M280 430 C330 370, 430 340, 520 330" />
   <path class="arrow" d="M645 430 V340" />

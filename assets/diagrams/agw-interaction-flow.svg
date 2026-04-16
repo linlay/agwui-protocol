@@ -38,7 +38,7 @@
   <path class="arrow" d="M288 217 H552" />
   <rect class="node platform" x="540" y="286" width="540" height="72" />
   <text class="text" x="572" y="316">基础执行主流</text>
-  <text class="small" x="572" y="340">reasoning.* / content.* / tool.* / action.* / artifact.publish</text>
+  <text class="small" x="572" y="340">reasoning.* / content.* / tool.* / action.* / <tspan fill="#C090A8" font-weight="700">artifact.publish</tspan></text>
   <path class="arrow" d="M820 244 V278" />
   <path class="arrow dashed" d="M540 322 H178" />
   <rect class="node note" x="62" y="404" width="226" height="52" />
@@ -52,10 +52,10 @@
   <text class="small" x="432" y="460">submit：对应 request.submit，恢复等待中的工具交互</text>
   <text class="small" x="432" y="486">steer：对应 request.steer，在原 SSE 流中插入追加用户指令</text>
   <text class="small" x="432" y="512">interrupt：不产生 request.interrupt，结果由 run.cancel 表达</text>
-  <text class="small" x="432" y="548">HITL 与 artifact 是主流中的重要分支，分别见 05 / 06 / 07 号图</text>
+  <text class="small" x="432" y="548">HITL 与 <tspan fill="#C090A8" font-weight="700">artifact</tspan> 是主流中的重要分支，分别见 05 / 06 / 07 号图</text>
   <rect class="panel" x="56" y="640" width="1208" height="118" />
   <text class="subtitle" x="80" y="670">图上要点</text>
-  <text class="small" x="80" y="698">- 这张图只讲入口和分流，不展开 approval / question / artifact 的细节。</text>
+  <text class="small" x="80" y="698">- 这张图只讲入口和分流，不展开 approval / question / <tspan fill="#C090A8" font-weight="700">artifact</tspan> 的细节。</text>
   <text class="small" x="80" y="720">- 默认泳道固定为 Frontend / Agent Platform。</text>
   <text class="small" x="80" y="742">- 只画前端可见的 live 协议，不画 snapshot / persisted 事件。</text>
 </svg>
