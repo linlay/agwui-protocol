@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" width="100%" height="100%" style="background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="100%" height="100%" style="background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <defs>
     <marker id="arrow-request" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5A86C8"/></marker>
     <marker id="arrow-run" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4476AD"/></marker>
@@ -18,16 +18,16 @@
     </style>
   </defs>
 
-  <line class="lifeline" x1="100" y1="80" x2="100" y2="700" />
-  <line class="lifeline" x1="1100" y1="80" x2="1100" y2="700" />
+  <line class="lifeline" x1="100" y1="80" x2="100" y2="580" />
+  <line class="lifeline" x1="1100" y1="80" x2="1100" y2="580" />
   <rect class="entity" x="20" y="40" width="160" height="40" />
   <text class="entity-text" x="100" y="65">Frontend</text>
   <rect class="entity" x="1020" y="40" width="160" height="40" />
   <text class="entity-text" x="1100" y="65">Agent Platform</text>
 
   <g opacity="0"><animate attributeName="opacity" begin="0s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="content" d="M1100 160 L100 160" marker-end="url(#arrow-content)"/><text class="label label-content" x="600" y="152">[SSE] content.start (运行中的正文段已经开始)</text><text class="code" x="600" y="176">data: {"type":"content.start","contentId":"mnzmv31p_r_1","runId":"mnzmv31p"}</text></g>
-  <g opacity="0"><animate attributeName="opacity" begin="0.7s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="content" d="M1100 250 L100 250" marker-end="url(#arrow-content)"/><text class="label label-content" x="600" y="242">[SSE] content.delta (正文仍在持续输出)</text><text class="code" x="600" y="266">data: {"type":"content.delta","contentId":"mnzmv31p_r_1","delta":"先从 Query、Submit、Steer、Interrupt 的边界开始说明。"}</text></g>
-  <g opacity="0"><animate attributeName="opacity" begin="1.4s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="req" d="M100 340 L1100 340" marker-end="url(#arrow-request)"/><text class="label label-req" x="600" y="332">POST /api/interrupt</text><text class="code" x="600" y="356">{"runId":"mnzmv31p","message":"先停止当前回答，我要改需求。"}</text></g>
-  <g opacity="0"><animate attributeName="opacity" begin="2.1s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="req" d="M1100 430 L100 430" marker-end="url(#arrow-request)"/><text class="label label-req" x="600" y="422">HTTP ack (终止请求成功接收)</text><text class="code" x="600" y="446">{"accepted":true,"status":"accepted","runId":"mnzmv31p"}</text></g>
-  <g opacity="0"><animate attributeName="opacity" begin="2.8s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="run" d="M1100 520 L100 520" marker-end="url(#arrow-run)"/><text class="label label-run" x="600" y="512">[SSE] run.cancel (中断结果在原始事件流里体现为 run.cancel)</text><text class="code" x="600" y="536">data: {"type":"run.cancel","runId":"mnzmv31p"}</text></g>
+  <g opacity="0"><animate attributeName="opacity" begin="0.7s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="content" d="M1100 220 L100 220" marker-end="url(#arrow-content)"/><text class="label label-content" x="600" y="212">[SSE] content.delta (正文仍在持续输出)</text><text class="code" x="600" y="236">data: {"type":"content.delta","contentId":"mnzmv31p_r_1","delta":"先从 Query、Submit、Steer、Interrupt 的边界开始说明。"}</text></g>
+  <g opacity="0"><animate attributeName="opacity" begin="1.4s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="req" d="M100 280 L1100 280" marker-end="url(#arrow-request)"/><text class="label label-req" x="600" y="272">POST /api/interrupt</text><text class="code" x="600" y="296">{"runId":"mnzmv31p","message":"先停止当前回答，我要改需求。"}</text></g>
+  <g opacity="0"><animate attributeName="opacity" begin="2.1s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="req" d="M1100 340 L100 340" marker-end="url(#arrow-request)"/><text class="label label-req" x="600" y="332">HTTP ack (终止请求成功接收)</text><text class="code" x="600" y="356">{"accepted":true,"status":"accepted","runId":"mnzmv31p"}</text></g>
+  <g opacity="0"><animate attributeName="opacity" begin="2.8s" dur="0.25s" from="0" to="1" fill="freeze"/><path class="run" d="M1100 400 L100 400" marker-end="url(#arrow-run)"/><text class="label label-run" x="600" y="392">[SSE] run.cancel (中断结果在原始事件流里体现为 run.cancel)</text><text class="code" x="600" y="416">data: {"type":"run.cancel","runId":"mnzmv31p"}</text></g>
 </svg>
