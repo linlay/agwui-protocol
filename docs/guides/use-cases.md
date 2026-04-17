@@ -1,12 +1,13 @@
 # 接入用例
 
-用例以“公开 HTTP API 请求 + 对应 SSE 事件流”为最小闭环展示。基础场景通常从 `POST /api/query` 开始，运行中也可以继续发送 `POST /api/steer` 或 `POST /api/interrupt`。
+用例默认以“公开 HTTP API 请求 + 对应 SSE 事件流”为最小闭环展示。基础场景通常从 `POST /api/query` 开始，运行中也可以继续发送 `POST /api/steer` 或 `POST /api/interrupt`。
 
 说明：
 
 - `reasoning.delta`、`tool.args`、`content.delta` 都是流式“吐字”，会拆成多段
 - 业务事件统一采用 `event: message + data: {"seq":...,"type":"...","timestamp":...}` 的单行 JSON 格式
 - 流结束时会追加 `event: message` + `data: [DONE]`
+- 如果启用 WebSocket，可承载相同业务语义；本页默认仍以 HTTP + SSE 为主示例
 
 ## 1. 基础问答：Query + Content
 

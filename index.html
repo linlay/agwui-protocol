@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AGW UI Interaction Protocol</title>
-  <meta name="description" content="AGW UI Interaction Protocol 首页，包含正式版 Basic 时序图与可重播动画预览。">
+  <meta name="description" content="AGW UI Interaction Protocol 首页，提供协议总览、参考规范、接入指南与视觉预览入口。">
   <style>
     :root {
       --bg: #f5efe5;
@@ -262,12 +262,12 @@
       <div class="panel copy">
         <span class="eyebrow">Official Basic</span>
         <h1>AGW UI Interaction Protocol</h1>
-        <p class="lede">首页主图切换为正式版 <code>02 AGW Basic Sequence</code>。这里直接展示可播放的基础多轮 Query 时序图，并补了一个按钮，方便从头重新播放整段动画。</p>
+        <p class="lede">这是 `agwui-protocol` 的浏览器入口页。首页继续用正式版 <code>02 AGW Basic Sequence</code> 展示默认的 HTTP + SSE 主路径，同时把 overview、reference、guides、visuals 四类内容拆开导航，方便按角色阅读。</p>
         <div class="actions">
-          <a class="button primary" href="./docs/interaction-sequences.md">查看全部时序图</a>
+          <a class="button primary" href="./docs/guides/interaction-sequences.md">查看全部时序图</a>
           <button class="secondary" type="button" id="replay-basic">重新播放动画</button>
         </div>
-        <p class="mini-note">实现方式是重新加载内嵌 SVG，所以无需改动图内动画定义，后续替换图稿也可以继续复用这套按钮逻辑。</p>
+        <p class="mini-note">首页只承担站点导航和主视觉，不承担正式协议正文。HTTP、SSE、WebSocket 和数据模型的正式定义都维护在 `docs/reference/`。</p>
         <div class="meta">
           <div class="meta-card">
             <strong>这张图说明什么</strong>
@@ -275,7 +275,7 @@
           </div>
           <div class="meta-card">
             <strong>正式资源路径</strong>
-            <p><code>assets/diagrams/02-agw-seq-basic.svg</code> 现已承接这版动画稿，文档里的 Basic 引用会自动跟上。</p>
+            <p><code>assets/diagrams/sequences/02-agw-seq-basic.svg</code> 承接当前首页主图，文档里的 Basic 引用会自动跟上。</p>
           </div>
         </div>
       </div>
@@ -285,10 +285,10 @@
           <object
             id="basic-sequence-diagram"
             type="image/svg+xml"
-            data="./assets/diagrams/02-agw-seq-basic.svg"
+            data="./assets/diagrams/sequences/02-agw-seq-basic.svg"
             aria-label="02 AGW Basic Sequence animated diagram"
           >
-            <img src="./assets/diagrams/02-agw-seq-basic.svg" alt="02 AGW Basic Sequence">
+            <img src="./assets/diagrams/sequences/02-agw-seq-basic.svg" alt="02 AGW Basic Sequence">
           </object>
         </div>
       </div>
@@ -297,17 +297,29 @@
     <section class="panel section">
       <h2>继续阅读</h2>
       <div class="link-grid">
+        <a class="link-card" href="./docs/README.md">
+          <strong>Docs Index</strong>
+          <span>从文档总导航进入 overview、reference、guides 与 visuals。</span>
+        </a>
         <a class="link-card" href="./README.md">
           <strong>README</strong>
-          <span>仓库导航、核心图入口和协议边界说明。</span>
+          <span>仓库导航、阅读顺序和内容分区说明。</span>
         </a>
-        <a class="link-card" href="./docs/architecture.md">
-          <strong>Architecture</strong>
-          <span>查看角色分层、部署边界和交互总览图。</span>
+        <a class="link-card" href="./docs/overview/protocol-positioning.md">
+          <strong>Overview</strong>
+          <span>从协议定位、术语边界和整体架构开始阅读。</span>
         </a>
-        <a class="link-card" href="./docs/resources.md">
-          <strong>Resources</strong>
-          <span>查看 SDK、前端测试项目和 Demo 入口占位。</span>
+        <a class="link-card" href="./docs/reference/http-api.md">
+          <strong>Reference</strong>
+          <span>查看 HTTP API、SSE、WebSocket 与数据模型。</span>
+        </a>
+        <a class="link-card" href="./docs/guides/interaction-sequences.md">
+          <strong>Guides</strong>
+          <span>查看时序图、接入用例和资源导航。</span>
+        </a>
+        <a class="link-card" href="./docs/visuals/sse-event-color-preview.html">
+          <strong>Visuals</strong>
+          <span>查看 SSE 事件类别与颜色语义预览页。</span>
         </a>
       </div>
     </section>
@@ -316,7 +328,7 @@
   <script>
     const diagram = document.getElementById("basic-sequence-diagram");
     const replayButton = document.getElementById("replay-basic");
-    const diagramSrc = "./assets/diagrams/02-agw-seq-basic.svg";
+    const diagramSrc = "./assets/diagrams/sequences/02-agw-seq-basic.svg";
 
     function replayDiagram() {
       diagram.data = `${diagramSrc}?replay=${Date.now()}`;

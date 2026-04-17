@@ -8,6 +8,7 @@
 - 除 `POST /api/query` 与 `GET /api/resource` 外，当前接口默认返回 JSON 包装：`{ "code": number, "msg": string, "data": ... }`。
 - `viewport` 是历史 `ViewRequest / ViewResponse` 的统一收敛命名，当前规范使用 `GET /api/viewport`。
 - HTTP API 与 SSE 事件层不是同一层协议。`request.*` 是流内回看事件，不等于公开 HTTP body。
+- 如果服务端启用 WebSocket，建议直接沿用原始 REST 路径作为 WS `type`；HTTP 仍是公开请求语义的基线定义。
 
 ## 2. 动作类接口
 
@@ -49,6 +50,7 @@
 - `request.query` 是 SSE 流里的回看事件，不是公开响应对象。
 - 当前前端应把 `query` 理解为“建立执行流”的入口，而不是“拿一份 JSON 结果”的接口。
 - `reasoning.snapshot`、`content.snapshot`、`tool.snapshot`、`action.snapshot` 不走 live SSE，只进入历史事件持久化。
+- 如果改走 WebSocket，请求 payload 仍与 `QueryRequest` 对齐，但 live 输出改由 `stream` 帧承载，见 [WebSocket 协议](websocket-protocol.md)。
 
 ### 2.2 `POST /api/upload`
 
@@ -111,6 +113,7 @@
 - `submit` 是同步确认接口。
 - 工具执行结果与最终回答仍走原 SSE 流，常见表现是 `tool.result` 或后续 `content.*`。
 - 运行流里记录为 `request.submit`；当前 HTTP 字段名是 `awaitingId`，而 live SSE 回看事件仍使用 `toolId`。
+- WebSocket 形态下，`/api/submit` 也返回普通 `response` 帧，而不是 `stream`。
 
 ### 2.4 `POST /api/steer`
 
@@ -144,6 +147,7 @@
 - `steer` 的同步确认来自 HTTP 响应。
 - 后续处理结果继续走原 SSE 流。
 - 流层记录为 `request.steer`，这是“回看事件”，不是公开 HTTP schema 的镜像对象。
+- WebSocket 形态下，`/api/steer` 对应普通 `response` 帧。
 
 ### 2.5 `POST /api/interrupt`
 
@@ -175,8 +179,11 @@
 - `interrupt` 的同步确认来自 HTTP 响应。
 - 实际停止以原 SSE 流中的 `run.cancel` 为准。
 - 当前流层不会发独立的 `request.interrupt`。
+- WebSocket 形态下，`/api/interrupt` 对应普通 `response` 帧。
 
 ## 3. 资源类接口
+
+说明：上传与资源下载继续保留在 HTTP，不迁移到 WebSocket。
 
 ### 3.1 `GET /api/viewport`
 

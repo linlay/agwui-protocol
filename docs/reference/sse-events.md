@@ -1,5 +1,7 @@
 # SSE 事件模型
 
+本页描述的是“事件语义 + SSE 线缆格式”。如果服务端启用 WebSocket，这些业务事件也可以通过 `stream.event` 承载；WebSocket 特有的连接、结束和错误语义请见 [WebSocket 协议](websocket-protocol.md)。
+
 ## 1. 传输约定
 
 ### 1.1 业务事件
@@ -63,6 +65,12 @@ data: [DONE]
 - live SSE 事件：会通过 `POST /api/query` 实时发给客户端。
 - snapshot / persisted 事件：只进入历史持久化，不走 live SSE。
 - 传输层帧：heartbeat 与 `[DONE]`，不属于业务 JSON 事件。
+
+补充：
+
+- 这里定义的 `request.* / run.* / content.* / tool.*` 属于业务事件语义
+- SSE 特有的是 `event: message`、`: heartbeat`、`data: [DONE]`
+- 对应的颜色与类别预览可见 [SSE Event Color Preview](../visuals/sse-event-color-preview.html)
 
 ## 4. Request 回看事件
 

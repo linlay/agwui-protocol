@@ -2,15 +2,23 @@
 
 本页把 AGW 的 live 协议交互收敛为 7 张编号化主图，只覆盖前端真实可见的 `HTTP + live SSE`，不画 snapshot / persisted 历史事件。
 
+如果启用 WebSocket，业务先后关系不变；变化的是建流方式与传输承载：
+
+- `/api/query` 可以改为 `/ws` 上的 `/api/query request frame`
+- live 事件改由 `stream frame` 承载
+- `submit / steer / interrupt` 可以通过同一条 WS 连接发出
+
+因此本页不再复制一套“7 张 WebSocket 版时序图”，而是继续用 HTTP + SSE 主路径表达业务语义。
+
 ## 01 总览图
 
-![01 AGW Sequence Overview](../assets/diagrams/01-agw-seq-overview.svg)
+![01 AGW Sequence Overview](../../assets/diagrams/sequences/01-agw-seq-overview.svg)
 
 总览图只负责说明 Query、Submit、Steer、Interrupt、HITL、Artifact 的入口关系与分流，不展开复杂分支细节。
 
 ## 02 基础多轮 Query
 
-![02 AGW Basic Sequence](../assets/diagrams/02-agw-seq-basic.svg)
+![02 AGW Basic Sequence](../../assets/diagrams/sequences/02-agw-seq-basic.svg)
 
 这张图只画基础 Query 主流，并把同一个 chat 中的两次 run 并列出来：
 
@@ -20,7 +28,7 @@
 
 ## 03 Steer
 
-![03 AGW Steer Sequence](../assets/diagrams/03-agw-seq-steer.svg)
+![03 AGW Steer Sequence](../../assets/diagrams/sequences/03-agw-seq-steer.svg)
 
 这张图单独展开运行中的 steer 控制分支：
 
@@ -30,7 +38,7 @@
 
 ## 04 Interrupt
 
-![04 AGW Interrupt Sequence](../assets/diagrams/04-agw-seq-interrupt.svg)
+![04 AGW Interrupt Sequence](../../assets/diagrams/sequences/04-agw-seq-interrupt.svg)
 
 这张图单独展开运行中的 interrupt 控制分支：
 
@@ -41,7 +49,7 @@
 
 ## 05 Question
 
-![05 AGW Question Sequence](../assets/diagrams/05-agw-seq-question.svg)
+![05 AGW Question Sequence](../../assets/diagrams/sequences/05-agw-seq-question.svg)
 
 这张图只画 question 分支：
 
@@ -52,7 +60,7 @@
 
 ## 06 Approval
 
-![06 AGW Approval Sequence](../assets/diagrams/06-agw-seq-approval.svg)
+![06 AGW Approval Sequence](../../assets/diagrams/sequences/06-agw-seq-approval.svg)
 
 这张图只画 approval 分支：
 
@@ -63,7 +71,7 @@
 
 ## 07 Artifact
 
-![07 AGW Artifact Sequence](../assets/diagrams/07-agw-seq-artifact.svg)
+![07 AGW Artifact Sequence](../../assets/diagrams/sequences/07-agw-seq-artifact.svg)
 
 这张图只画运行中的 artifact 分支：
 

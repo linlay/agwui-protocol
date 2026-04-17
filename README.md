@@ -1,97 +1,66 @@
 # AGW UI Interaction Protocol
 
-AGW UI Interaction Protocol 用于定义前端应用如何与智能体平台通信，包括公开 HTTP API、实时 SSE 事件流、共享数据模型，以及典型接入用例。
+AGW UI Interaction Protocol 用于定义前端应用如何与智能体平台通信，包括公开 HTTP API、实时 SSE 事件流、可选 WebSocket 传输层、共享数据模型，以及典型接入用例。
 
 这里的 Agent Platform 是协议默认主体；Gateway 只是其中一种兼容部署模式，协议本身不要求中间必须存在 Gateway。
 
-动画首页入口见 [index.html](index.html)，首页主图已切到正式版 `02 AGW Basic Sequence`，并支持“重新播放动画”。
+浏览器入口见 [index.html](index.html)。仓库正文采用“内容仓库化”结构：正式规范、接入指南、视觉预览页和静态资产分层维护。
 
 ## 阅读顺序
 
-1. [协议概览](docs/overview.md)
-2. [架构与交互图](docs/architecture.md)
-3. [共享数据模型](docs/data-models.md)
-4. [HTTP API](docs/http-api.md)
-5. [SSE 事件模型](docs/sse-events.md)
-6. [交互时序图](docs/interaction-sequences.md)
-7. [接入用例](docs/use-cases.md)
-8. [资源导航](docs/resources.md)
+1. [文档总导航](docs/README.md)
+2. [协议定位](docs/overview/protocol-positioning.md)
+3. [术语与边界](docs/overview/terminology-and-boundaries.md)
+4. [架构与交互图](docs/overview/architecture.md)
+5. [HTTP API](docs/reference/http-api.md)
+6. [SSE 事件模型](docs/reference/sse-events.md)
+7. [WebSocket 协议](docs/reference/websocket-protocol.md)
+8. [共享数据模型](docs/reference/data-models.md)
+9. [交互时序图](docs/guides/interaction-sequences.md)
+10. [接入用例](docs/guides/use-cases.md)
+11. [资源导航](docs/guides/resources.md)
 
-## 文档导航
+## 内容分区
 
-| 文档 | 说明 |
+| 分区 | 说明 |
 | --- | --- |
-| [docs/overview.md](docs/overview.md) | 协议定位、分层边界、术语和阅读指引 |
-| [docs/architecture.md](docs/architecture.md) | 系统参与方、架构图、交互总览图和主流程说明 |
-| [docs/data-models.md](docs/data-models.md) | `Reference`、各类 ID、引用标记和通用约定 |
-| [docs/http-api.md](docs/http-api.md) | 全部公开 HTTP 接口 |
-| [docs/sse-events.md](docs/sse-events.md) | SSE 传输约定与事件模型 |
-| [docs/interaction-sequences.md](docs/interaction-sequences.md) | 7 张编号化主时序图 |
-| [docs/use-cases.md](docs/use-cases.md) | 典型请求与事件流闭环示例 |
-| [docs/resources.md](docs/resources.md) | SDK、前端测试项目、录屏入口占位页 |
+| [`docs/overview/`](docs/overview/protocol-positioning.md) | 协议定位、术语边界、架构主线 |
+| [`docs/reference/`](docs/reference/http-api.md) | 正式协议定义：HTTP、SSE、WebSocket、数据模型 |
+| [`docs/guides/`](docs/guides/interaction-sequences.md) | 时序图、接入用例、资源导航 |
+| [`docs/visuals/`](docs/visuals/sse-event-color-preview.html) | 辅助理解页面，不属于正式规范正文 |
+| [`assets/diagrams/`](assets/diagrams/sequences/02-agw-seq-basic.svg) | 时序图与架构图静态资产 |
 
-## 核心时序图
+## 站点入口
 
-### 01 总览图
-
-![01 AGW Sequence Overview](assets/diagrams/01-agw-seq-overview.svg)
-
-### 02 基础多轮 Query
-
-![02 AGW Basic Sequence](assets/diagrams/02-agw-seq-basic.svg)
-
-### 03 Steer 图
-
-![03 AGW Steer Sequence](assets/diagrams/03-agw-seq-steer.svg)
-
-### 04 Interrupt 图
-
-![04 AGW Interrupt Sequence](assets/diagrams/04-agw-seq-interrupt.svg)
-
-### 05 Question 图
-
-![05 AGW Question Sequence](assets/diagrams/05-agw-seq-question.svg)
-
-### 06 Approval 图
-
-![06 AGW Approval Sequence](assets/diagrams/06-agw-seq-approval.svg)
-
-### 07 Artifact 图
-
-![07 AGW Artifact Sequence](assets/diagrams/07-agw-seq-artifact.svg)
-
-更多说明见 [docs/interaction-sequences.md](docs/interaction-sequences.md)。
+- 首页：[index.html](index.html)
+- 文档导航：[docs/README.md](docs/README.md)
+- 视觉预览：[docs/visuals/sse-event-color-preview.html](docs/visuals/sse-event-color-preview.html)
 
 ## 协议边界
 
 - 所有公开请求都以 `/api` 为前缀。
-- `/api/query` 直接返回 `text/event-stream`，不是普通 JSON 响应。
-- `request.*`、`run.*`、`task.*`、`content.*` 等名称属于 SSE 事件层，不要求和 HTTP API 形成 1:1 命名映射。
-- `POST /api/interrupt` 的结果在流层体现为 `run.cancel`，不会额外产生一个 `request.interrupt` 事件。
-- `POST /api/submit` 的 HTTP 字段名是 `awaitingId`；当前流内 `request.submit` 事件仍使用 `toolId`。
+- `POST /api/query` 在 HTTP 形态下直接返回 `text/event-stream`，不是普通 JSON 响应。
+- `request.*`、`run.*`、`task.*`、`content.*` 等名称属于实时事件层，不要求和 HTTP API 形成 1:1 命名映射。
+- `POST /api/interrupt` 的结果在流层体现为 `run.cancel`，不会额外产生 `request.interrupt`。
+- WebSocket 是额外传输层，不改变既有 HTTP API 与事件语义。
 
-## 仓库结构
+## 目录结构
 
 ```text
 .
-├── index.html
 ├── README.md
+├── index.html
 ├── docs/
-│   ├── overview.md
-│   ├── architecture.md
-│   ├── data-models.md
-│   ├── http-api.md
-│   ├── sse-events.md
-│   ├── interaction-sequences.md
-│   ├── use-cases.md
-│   └── resources.md
-└── assets/
-    └── diagrams/
-        ├── 01-agw-seq-overview.svg
-        ├── 02-agw-seq-basic.svg
-        ├── 03-agw-seq-steer.svg
-        ├── 04-agw-seq-interrupt.svg
-        ├── 05-agw-seq-question.svg
-        ├── 06-agw-seq-approval.svg
-        └── 07-agw-seq-artifact.svg
+│   ├── README.md
+│   ├── overview/
+│   ├── reference/
+│   ├── guides/
+│   └── visuals/
+├── assets/
+│   ├── diagrams/
+│   │   ├── sequences/
+│   │   ├── architecture/
+│   │   └── overview/
+│   └── images/
+└── site/
 ```
